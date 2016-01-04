@@ -1,0 +1,330 @@
+<?php
+
+function fpeditor_menu(){
+	$items['fpeditor'] = array(
+		'title' => t('Front Page Editor'),
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('fpeditor_editor_form'),
+		'type' => MENU_NORMAL_ITEM,
+		'access arguments' => array(true),
+//		'file' => 'epoc_slider_list.inc',
+//		'file path' => drupal_get_path('module','epoc').'/include',
+	);
+	
+ $items['fpeditor/%ctools_js/add_content'] = array(
+     'page callback' => 'fpeditor_add_content_modal_callback',
+     'page arguments' => array(1),
+     'access arguments' => array('access content'),
+ );
+ 
+ $items['fpeditor/%ctools_js/add_content_form'] = array(
+	'title' => t('Front Page Editor'),
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('fpeditor_add_content_form'),
+		'type' => MENU_NORMAL_ITEM,
+		'access arguments' => array(true),
+ );
+
+
+
+ $items['fpeditor/%ctools_js/add_content_modal_form'] = array(
+		'title' => 'Add content',
+		'page callback' => 'fpeditor_add_content_modal_form',
+		'page arguments' => array(1),
+		'access callback' => TRUE,
+		'file' => 'fpeditor_add_content_modal_form.inc',
+		'file path' => drupal_get_path('module','fpeditor').'/include',     
+		'type' => MENU_CALLBACK,
+ );
+
+ $items['fpeditor/autocomplete_node'] = array(
+		'title' => 'Search node',
+		'page callback' => 'fpeditor_autocomplente_node',
+		'access callback' => TRUE,
+		'file' => 'fpeditor_add_content_modal_form.inc',
+		'file path' => drupal_get_path('module','fpeditor').'/include',     
+		'type' => MENU_CALLBACK,
+ );
+
+
+	
+	return $items;
+}
+
+
+function fpeditor_add_content_form($form,&$form_state){
+	$form['texto'] = array(
+		'#type' => 'textfield',
+		'#title' => 'Pon algo'
+	);
+	
+	$form['control'] = array(
+		'#type' => 'select',
+		'#options' => array('uno'=>'uno', 'dos'=> 'dos'),
+	);
+	
+	return $form;
+}
+
+
+function fpeditor_add_content_modal_callback($js = FALSE) {
+	//~ $nid= 4911;
+  //~ // Load the node obkect
+  //~ $node = node_load($nid);
+  //~ // Drupal 7 requires a render of the node object in order to obtain a string.
+  //~ // Note that I am able to customize the fields by using the "Teaser" display mode
+  //~ // under admin/structure/types.
+  //~ $contents = render(node_view($node, 'teaser', NULL));
+ 	
+  ctools_include('modal');
+  ctools_include('ajax');
+ 
+
+ 	$form_info = array(
+    'id' => 'fp-editor-add-content',
+    'path' => "ctools_ajax_sample/" . ($js ? 'ajax' : 'nojs') . "/animal/%step",
+    'show trail' => TRUE,
+    'show back' => TRUE,
+    'show cancel' => TRUE,
+    'show return' => FALSE,
+    'next callback' =>  'ctools_ajax_sample_wizard_next',
+    'finish callback' => 'ctools_ajax_sample_wizard_finish',
+    'cancel callback' => 'ctools_ajax_sample_wizard_cancel',
+   // this controls order, as well as form labels
+    'order' => array(
+      'start' => t('Choose animal'),
+    ),
+   // here we map a step to a form id.
+    'forms' => array(
+      // e.g. this for the step at wombat/create
+      'start' => array(
+        'form id' => 'ctools_ajax_sample_start'
+      ),
+    ),
+  );
+ 	
+ 	
+ 	
+ 	
+  
+    $form_state = array(
+      'ajax' => true,
+      'title' => t('Add content'),
+    );
+    $output = ctools_modal_form_wrapper('fpeditor_add_content_form', $form_state);
+    
+  
+  
+  
+  
+  
+  
+  
+  print ajax_render($output) ;
+  drupal_exit();
+}
+
+
+
+function fpeditor_editor_form(){
+	
+	_drupal_flush_css_js(); 
+  registry_rebuild();
+  drupal_clear_css_cache();
+  drupal_clear_js_cache();
+	
+	  ctools_include('ajax');
+    ctools_include('modal');
+    ctools_modal_add_js();
+    
+
+		//dpm(entity_get_info());
+		
+   
+    
+  //~ $form['boton_modal'] = array('#markup'=>ctools_modal_text_button(t('Modal Login (default style)'), 'fpeditor/nojs/add_content', t('Login via modal')));
+  //~ $form['boton_modal'] = array('#markup'=>ctools_modal_text_button(t('Wizard sample'), 'fpeditor/nojs/add_content_modal_form', t('Login via modal')));
+  
+  
+  //~ $form['enlace_modal'] = array('#markup'=>l('Abrir','fpeditor/nojs/add_content', array('query' => array('widget' => '27'),'attributes' => array('class' => 'ctools-use-modal')) ));
+	
+	
+   drupal_add_library('system', 'ui.tabs');
+   drupal_add_js('jQuery(document).ready(function(){
+               // jQuery("#tabs").tabs({event: "mouseover"});
+                jQuery("#tabs").tabs().addClass("ui-tabs-vertical ui-helper-clearfix");
+                jQuery("#tabs li").removeClass("ui-corner-top").addClass("ui-corner-left");
+            });',
+        'inline');	
+
+	drupal_add_css(drupal_get_path('module','fpeditor').'/gridstack/src/gridstack.css',
+		array(
+			'type' => 'file',
+			'scope' => 'footer',
+			'group' => JS_THEME,
+			'every_page' => TRUE,
+			'weight' => -1,
+	));
+	
+	drupal_add_css(drupal_get_path('module','fpeditor').'/css/fpeditor.css',
+		array(
+			'type' => 'file',
+			'scope' => 'footer',
+			'group' => JS_THEME,
+			'every_page' => TRUE,
+			'weight' => -1,
+	));
+	
+	//~ drupal_add_css(drupal_get_path('module','fpeditor').'/editor/editor.css',
+		//~ array(
+			//~ 'type' => 'file',
+			//~ 'scope' => 'footer',
+			//~ 'group' => JS_THEME,
+			//~ 'every_page' => TRUE,
+			//~ 'weight' => -1,
+	//~ ));
+	
+	//~ drupal_add_css(drupal_get_path('module','fpeditor').'/jQuery-TE/jquery-te-1.4.0.css',
+		//~ array(
+			//~ 'type' => 'file',
+			//~ 'scope' => 'footer',
+			//~ 'group' => JS_THEME,
+			//~ 'every_page' => TRUE,
+			//~ 'weight' => -1,
+	//~ ));
+
+	drupal_add_js('http://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.5.0/lodash.min.js',
+		array(
+			'type' => 'external',
+			'scope' => 'footer',
+			'group' => JS_THEME,
+			'every_page' => TRUE,
+			'weight' => -1,
+	));
+
+	drupal_add_js(drupal_get_path('module','fpeditor').'/gridstack/src/gridstack.js',
+		array(
+			'type' => 'file',
+			'scope' => 'footer',
+			'group' => JS_THEME,
+			'every_page' => TRUE,
+			'weight' => -1,
+	));
+	
+	drupal_add_js(drupal_get_path('module','fpeditor').'/js/fpeditor.js',
+		array(
+			'type' => 'file',
+			'scope' => 'footer',
+			'group' => JS_THEME,
+			'every_page' => TRUE,
+			'weight' => -1,
+	));
+
+	//~ drupal_add_js(drupal_get_path('module','fpeditor').'/jQuery-TE/jquery-te-1.4.0.min.js',
+		//~ array(
+			//~ 'type' => 'file',
+			//~ 'scope' => 'footer',
+			//~ 'group' => JS_THEME,
+			//~ 'every_page' => TRUE,
+			//~ 'weight' => -1,
+	//~ ));
+	
+	//~ drupal_add_js(drupal_get_path('module','fpeditor').'/editor/editor.js',
+		//~ array(
+			//~ 'type' => 'file',
+			//~ 'scope' => 'footer',
+			//~ 'group' => JS_THEME,
+			//~ 'every_page' => TRUE,
+			//~ 'weight' => -1,
+	//~ ));
+	
+	//$form['button'] = array('#markup' => '<div><a class="btn btn-default" id="add-new-widget" href="#">Add Widget</a></div>');
+
+	$text_value = '
+	<div id="tabs">
+	<div id="tab-list">
+		<ul>
+			<li><a href="#tabs-1">Grid</a></li>
+			<li><a href="#tabs-2">Editor</a></li>
+			</ul>
+		</div>
+		</br>
+		</br>
+		
+	<div id="tab-content">    
+		<div id="tabs-1">
+			
+			<div class="editor">
+				<div class="container-fluid">
+						<div class="grid-stack"  data-gs-width="12">
+							<div data-level="0" class="grid-stack-add-widget grid-stack-add-widget-main "><i class="fa fa-plus-square-o fa-fw"></i></div>
+						</div>
+				</div>
+			</div>
+			
+		</div>
+
+    ';
+    
+  $form['otra-cosa'] = array('#markup'=> $text_value);
+    
+  $form['content'] = array(
+    '#type' => 'text_format',
+    '#title' => t('Content'),
+    '#default_value' => '',
+    '#description' => t('Now, you can edit this before insert'),
+    '#format' => 'full_html',
+    '#prefix' => '<div id="tabs-2">',
+    '#suffix' => '</div></div></div>'
+	);
+
+	
+	return $form;
+}
+
+
+
+
+/*
+ * EDITORES
+ * ================================================================================================
+ * https://jhtmlarea.codeplex.com/
+ * http://wysiwygjs.github.io/
+ * http://alex-d.github.io/Trumbowyg/
+ * http://jejacks0n.github.io/mercury/downloads/
+ * https://mindmup.github.io/bootstrap-wysiwyg/
+ * https://github.com/mindmup/bootstrap-wysiwyg
+ * http://premiumsoftware.net/cleditor/
+ * http://wysihtml.com/
+ * 
+ * NESTED GRIDSTACK
+ * ================================================================================================
+ * https://jsfiddle.net/wmLk2ey7/7/
+ * 
+ * ICONS FOR JQUERY
+ * ================================================================================================
+ * https://github.com/mkkeck/jquery-ui-iconfont
+ * 
+ * VENTANAS MODALES
+ * ================================================================================================
+ * https://www.drupion.com/blog/10-steps-creating-ctools-modal-window-drupal-7
+ * http://mrkadin.com/blog/node/68
+ * https://www.appnovation.com/blog/ctools-auto-modal-non-link-elements
+ * https://www.deeson.co.uk/labs/insert-form-pop-modal-ctools-and-drupal-7
+ * http://mrkadin.com/blog/node/68
+ * https://www.drupion.com/blog/10-steps-creating-ctools-modal-window-drupal-7
+ * 
+ * 
+ * http://internetdevels.com/blog/ctools-multistep-wizard-example
+ * http://ecapy.com/formularios-multistep-con-ctools/
+ * 
+ * 
+ * DISPLAY BLOCK
+ * $block = module_invoke('taxonomy_menu_block', 'block_view', '1');
+ * $block = render($block['content']);
+ + $form['chorrada'] = array('#markup'=>$block);
+ * 
+ * BOOTSTRAP Y WYSYWYG
+ * http://www.sooperthemes.com/drupal-blog/drupal-cms-powerstart-tutorial-2-responsive-websites-bootstrap-3-grid
+ * 
+ * */

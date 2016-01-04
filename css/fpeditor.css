@@ -1,0 +1,60 @@
+.ui-resizable-handle .ui-resizable-se {
+	display: none !important;
+}
+
+.grid-stack > .grid-stack-item > .ui-resizable-s{
+	bottom: 20px;
+}
+
+.grid-stack {
+		//background-color: lightgoldenrodyellow;
+}
+
+.grid-stack > .grid-stack-item > .grid-stack-item-content {
+		color: #2c3e50;
+		background-color:  rgba(255, 0, 0, 0.1) !important;
+		padding-bottom: 20px;
+		overflow-y: visible !important;
+		margin-bottom: 20px;
+}
+
+.grid-stack-delete-widget-link {
+    bottom: 0px;
+    position: absolute;
+    right: 30px;
+    cursor: pointer;
+    height: 20px;
+    width: 20px;
+}
+
+.grid-stack-add-widget {
+    bottom: 0px;
+    position: absolute;
+    right: 60px;
+    cursor: pointer;
+    height: 20px;
+    width: 18px;
+}
+
+.grid-stack-add-widget-main {
+		bottom: -40px;
+		right: -40px;
+}
+
+.grid-stack-config-widget{
+    bottom: 0px;
+    position: absolute;
+    right: 90px;
+    cursor: pointer;
+    height: 20px;
+    width: 20px;
+}
+
+.grid-stack-add-content{
+    bottom: 0px;
+    position: absolute;
+    right: 120px;
+    cursor: pointer;
+    height: 20px;
+    width: 20px;
+}
